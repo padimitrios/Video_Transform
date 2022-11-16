@@ -101,6 +101,6 @@ for frame in transformed_matrix:
 avg_energy = []
 for val in energy:
     for v in val:
-        avg_energy.append(v//129600)
+        avg_energy.append(v//len(c))
 
-avg_array = np.array(avg_energy).reshape((4, -1))
+avg_energy = np.array(avg_energy).reshape((4, -1))
