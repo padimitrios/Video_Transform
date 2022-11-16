@@ -77,30 +77,45 @@ def DCT(A,X):
 
 #matrix = [[5,11,8,10],[9,8,4,12],[1,10,11,4],[19,6,15,7]]
 
-a = 0.5
-b = (0.5**0.5)*math.cos(math.pi/8)
-c = (0.5**0.5)*math.cos(3*math.pi/8)
-dct_arr = [[a,a,a,a],[b,c,c*(-1),b*(-1)],[a,a*(-1),a*(-1),a],[c,b*(-1),b,c*(-1)]]
-#DCT(dct_arr,matrix)
- 
+#take first frame of y
 c = yuv_frame[0].y
+#reform it into 4x4 lists
 c = blockshaped(c, 4, 4)
 
+#dct transform on the patrix
 transformed_matrix = []
 
 for frame in c:
     transformed_matrix.append(DCT(dct_arr,frame))
 
-
+#calculate energy
 energy = [[0] * 4 for _ in range(4)]
 for frame in transformed_matrix:
     for i in range(len(frame)):
         for j in range(len(frame[0])):
             energy[i][j] += (abs(frame[i][j])**2)
 
+#calculate avergae energy
 avg_energy = []
 for val in energy:
     for v in val:
         avg_energy.append(v//len(c))
 
+#reform array to 4x4
 avg_energy = np.array(avg_energy).reshape((4, -1))
+     
+#calculate energy   
+initial_energy = [[0] * 4 for _ in range(4)]
+for frame in c:
+    for i in range(len(frame)):
+        for j in range(len(frame[0])):
+            initial_energy[i][j] += (abs(frame[i][j])**2)
+
+#calculate avergae energy
+initial_avg_energy = []
+for val in initial_energy:
+    for v in val:
+        initial_avg_energy.append(v//len(c))
+
+#reform array to 4x4
+initial_avg_energy = np.array(initial_avg_energy).reshape((4, -1))
