@@ -1,6 +1,8 @@
 import numpy as np
 import math
 import yuvio
+import math
+
 
 yuv_frame = yuvio.mimread("C:/Users/Dimitris/Desktop/Beauty_1920x1080_120fps_420_8bit_YUV.yuv", 1920, 1080, "yuv420p")
 
@@ -25,11 +27,11 @@ def blockshaped(arr, nrows, ncols):
 
 
 
-import math
 def DCT(A,X):
     Y = np.dot(A,X)
     A = np.transpose(A)
-    print(np.dot(Y,A))
+    #print(np.dot(Y,A))
+    return np.dot(Y,A)
     
  
 
@@ -73,21 +75,32 @@ def DCT(A,X):
 #         print()
 
 
-
-
-matrix = [[5,11,8,10],[9,8,4,12],[1,10,11,4],[19,6,15,7]]
+#matrix = [[5,11,8,10],[9,8,4,12],[1,10,11,4],[19,6,15,7]]
 
 a = 0.5
 b = (0.5**0.5)*math.cos(math.pi/8)
 c = (0.5**0.5)*math.cos(3*math.pi/8)
 dct_arr = [[a,a,a,a],[b,c,c*(-1),b*(-1)],[a,a*(-1),a*(-1),a],[c,b*(-1),b,c*(-1)]]
-
 #DCT(dct_arr,matrix)
  
 c = yuv_frame[0].y
 c = blockshaped(c, 4, 4)
 
-
+transformed_matrix = []
 
 for frame in c:
-    DCT(dct_arr,frame)
+    transformed_matrix.append(DCT(dct_arr,frame))
+
+
+energy = [[0] * 4 for _ in range(4)]
+for frame in transformed_matrix:
+    for i in range(len(frame)):
+        for j in range(len(frame[0])):
+            energy[i][j] += (abs(frame[i][j])**2)
+
+avg_energy = []
+for val in energy:
+    for v in val:
+        avg_energy.append(v//129600)
+
+avg_array = np.array(avg_energy).reshape((4, -1))
