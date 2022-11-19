@@ -7,8 +7,10 @@ SIZE = 4
 yuv_frame = yuvio.mimread("C:/Users/Dimitris/Desktop/Beauty_1920x1080_120fps_420_8bit_YUV.yuv", 1920, 1080, "yuv420p")
 
 #https://stackoverflow.com/questions/16856788/slice-2d-array-into-smaller-2d-arrays
-#@PARAMS --> The array to be sized down, the number of rows and cols of the arrays to be created
-#@RETURN --> The initial array seperated on subarrays of the desired dimensions
+#@PARAMS -->   arr: integer array   (array to be sized down)
+#            nrows: integer         (number of rows)
+#            ncols: integer         (number of cols)
+#@RETURN --> 2d array containing 2d arrays  (initial array seperated on subarrays of the desired dimensions)
 #@DESC   --> Transform an array into subarrays of a given size
 def blockshaped(arr, nrows, ncols):
     """
@@ -25,18 +27,19 @@ def blockshaped(arr, nrows, ncols):
                .swapaxes(1,2)
                .reshape(-1, nrows, ncols))
 
-#@PARAMS --> Two matrixes A,X where X is the array to be tranformed and A is the transformation array based on HVEC standards
-#@RETURN --> The transformed array on numpy array form
-#@DESC   --> The transform procedure, performing serial matrix multiplication
+#@PARAMS --> X: integer array         (array to be transformed)
+#            A: integer array         (transformation array based on HVEC standards)
+#@RETURN --> integer numpy array      (he transformed array)
+#@DESC   --> The matrix transformation procedure, performing matrix multiplication based on HVEC standards
 def transform(A,X):
-    
-    #transform procedure based on HVEC standards
+
     Y = np.dot(A,X)
     A = np.transpose(A)
     return np.dot(Y,A)
 
-#@PARAMS --> Transformed matrix and frame length
-#@RETURN --> Array of matrix average on numpy form
+#@PARAMS --> transformed_matrix: integer array  (transfomrmed array)
+#            frame_length: integer              (length of processing frame)
+#@RETURN --> integer_64 numpy array             (average array)
 #@DESC   --> Average energy calculation of transformed matrix
 def calculate_transform_energy_average(transformed_matrix,frame_length):
     
