@@ -6,26 +6,34 @@ SIZE = 4
 
 yuv_frame = yuvio.mimread("C:/Users/Dimitris/Desktop/Beauty_1920x1080_120fps_420_8bit_YUV.yuv", 1920, 1080, "yuv420p")
 
-#https://stackoverflow.com/questions/16856788/slice-2d-array-into-smaller-2d-arrays
-#@PARAMS -->   arr: integer array   (array to be sized down)
-#            nrows: integer         (number of rows)
-#            ncols: integer         (number of cols)
+#@PARAMS -->    arr: integer array   (array to be sized down)
+#            n_rows: integer        (number of rows)
+#            n_cols: integer        (number of cols)
 #@RETURN --> 2d array containing 2d arrays  (initial array seperated on subarrays of the desired dimensions)
 #@DESC   --> Transform an array into subarrays of a given size
-def blockshaped(arr, nrows, ncols):
-    """
-    Return an array of shape (n, nrows, ncols) where
-    n * nrows * ncols = arr.size
+def blockshaped(arr, n_rows, n_cols):
+    #store array dimensions
+    height, width = arr.shape
 
-    If arr is a 2D array, the returned array should look like n subblocks with
-    each subblock preserving the "physical" layout of arr.
-    """
-    h, w = arr.shape
-    assert h % nrows == 0, f"{h} rows is not evenly divisible by {nrows}"
-    assert w % ncols == 0, f"{w} cols is not evenly divisible by {ncols}"
-    return (arr.reshape(h//nrows, nrows, -1, ncols)
+    #compatability check
+    assert height % n_rows == 0, f"{h} rows is not evenly divisible by {n_rows}"
+    assert width % n_cols == 0, f"{w} cols is not evenly divisible by {n_cols}"
+
+    #first reshape  --> number of arrays subarrays, number of internal subarrays of subarrays
+    #                   newshape spesial variable (docs: https://numpy.org/doc/stable/reference/generated/numpy.reshape.html#numpy.reshape),
+    #                   number of rows
+    #                   result reshape => array in a form of n_rows x n_cols subarrays
+    #swapaxes       --> break the subarrays into the desired blocks  ex. for array:  [[ 0  1  2  3  4  5]      \                     [[ 0  6 12 18]
+    #                                                                                 [ 6  7  8  9 10 11]        >  swapaxes(0,1) =>  [ 1  7 13 19]
+    #                                                                                 [12 13 14 15 16 17]        >                    [ 2  8 14 20]
+    #                                                                                 [18 19 20 21 22 23]]     /                      [ 3  9 15 21]
+    #                                                                                                                                 [ 4 10 16 22]
+    #                                                                                                                                 [ 5 11 17 23]]
+    #                   docs: https://numpy.org/doc/stable/reference/generated/numpy.swapaxes.html
+    #second reshape --> better format the array subarrays to the desired dimensions
+    return (arr.reshape(height//n_rows, n_rows, -1, n_cols)
                .swapaxes(1,2)
-               .reshape(-1, nrows, ncols))
+               .reshape(-1, n_rows, n_cols))
 
 #@PARAMS --> X: integer array         (array to be transformed)
 #            A: integer array         (transformation array based on HVEC standards)
